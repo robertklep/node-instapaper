@@ -27,7 +27,7 @@ client.list().then(function(bookmarks) {
 
 // ...or regular callbacks
 client.list(function(err, bookmarks) {
-  if (err) console.warn('oh noes', err);
+  if (err) return console.warn('oh noes', err);
   console.log('%j', bookmarks);
 });
 ```
