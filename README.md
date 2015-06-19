@@ -19,14 +19,14 @@ var client     = Instapaper(CONSUMER_KEY, CONSUMER_SECRET);
 client.setCredentials(USERNAME, PASSWORD);
 
 // Load a list of bookmarks using promises...
-client.list().then(function(bookmarks) {
+client.bookmarks.list().then(function(bookmarks) {
   console.log('%j', bookmarks);
 }).catch(function(err) {
   console.warn('oh noes', err);
 });
 
 // ...or regular callbacks
-client.list(function(err, bookmarks) {
+client.bookmarks.list(function(err, bookmarks) {
   if (err) return console.warn('oh noes', err);
   console.log('%j', bookmarks);
 });
