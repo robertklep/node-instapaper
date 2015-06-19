@@ -13,5 +13,9 @@
     "mashape-oauth": "^0.1.71",
     "request": "^2.55.0",
     "winston": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "docopt": "^0.6.2",
+    "rc": "^1.0.3"
   }
 }

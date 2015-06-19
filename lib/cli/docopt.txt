@@ -1,0 +1,14 @@
+instapaper – an Instapaper API client
+
+Usage:
+  instapaper [options] verify
+  instapaper [options] list [--limit=<limit>] [--folder_id=<id>] [--have=<ids>] [--highlights=<highlights>]
+
+Options:
+  -h --help        Show this screen
+  -v --version     Show version
+  -V --verbose     Be more verbose
+  -u,--username    Instapaper username
+  -p,--password    Instapaper password
+  -k,--key         Instapaper API consumer key
+  -s,--secret      Instapaper API consumer secret
