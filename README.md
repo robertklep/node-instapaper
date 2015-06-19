@@ -16,7 +16,7 @@ $ npm i instapaper
 var Instapaper = require('instapaper');
 var client     = Instapaper(CONSUMER_KEY, CONSUMER_SECRET);
 
-client.setCredentials(USERNAME, PASSWORD);
+client.setUserCredentials(USERNAME, PASSWORD);
 
 // Load a list of bookmarks using promises...
 client.bookmarks.list().then(function(bookmarks) {
@@ -42,7 +42,7 @@ You also need either:
 - or, an OAuth token and secret from a previous authentication round.
 
 
-You should never store the username/password locally. Instead, after you've used them to get an OAuth token/secret pair, use that instead.
+You should never store the username/password locally. Instead, after you've used them to get an OAuth token/secret pair, use those instead.
 
 ## Usage:
 
@@ -52,26 +52,25 @@ You should never store the username/password locally. Instead, after you've used
 var client = Instapaper(CONSUMER_KEY : String, CONSUMER_SECRET : String[, OPTIONS : Object]);
 ```
 
-- `OPTIONS` is an optional object that may contain the following properties:
+`OPTIONS` is an optional object that may contain the following properties:
 
-  ```
-  apiUrl     : String  // Instapaper API URL prefix (default: 'https://www.instapaper.com/api/1')
-  logLevel   : String  // log level                 (default: 'info')
-  ```
-
+```
+apiUrl   : String // Instapaper API URL prefix (default: 'https://www.instapaper.com/api/1')
+logLevel : String // log level                 (default: 'info')
+```
 
 ### Authentication
 
 #### Set user credentials
 
 ```
-client.setUserCredentials(USERNAME : String, PASSWORD : String) : void
+client.setUserCredentials(USERNAME : String, PASSWORD : String) : client
 ```
 
 #### Set OAuth credentials
 
 ```
-client.setOAuthCredentials(TOKEN : String, SECRET : String) : void
+client.setOAuthCredentials(TOKEN : String, SECRET : String) : client
 ```
 
 #### Authenticate
@@ -83,9 +82,17 @@ client.authenticate() : Promise
 All regular API methods call this method implicitly. However, if you want to retrieve the OAuth credentials you can use this method to do so:
 
 ```
-client.authenticate().spread(function(token, secret) {
-  ...
+client.authenticate().then(function(oauth) {
+  // { token : '...', secret : '...' }
 });
+```
+
+### Verify credentials
+
+This can be used to verify that authenticating as the user was successful.
+
+```
+client.verifyCredentials() : Promise
 ```
 
 ### Bookmarks management
@@ -104,3 +111,15 @@ client.bookmarks.unarchive(BOOKMARK_ID) : Promise
 ### Folder management
 
 TBD.
+
+## Terms of use
+
+Please read the [Instapaper API Terms of Use](https://www.instapaper.com/api/terms) before using this API client.
+
+## AUTHOR
+
+Robert Klep <<robert@klep.name>>
+
+## LICENCE
+
+See [LICENSE.md](LICENSE.md).
