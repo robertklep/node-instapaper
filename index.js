@@ -3,6 +3,7 @@ var lodash  = require('lodash');
 var OAuth   = require('mashape-oauth').OAuth;
 var request = require('request');
 var logger  = require('winston');
+var qs      = require('querystring');
 var Promise = require('bluebird').Promise; Promise.longStackTraces();
 
 var DEFAULTS = {
@@ -32,6 +33,10 @@ var Instapaper = module.exports = function Instapaper(consumerKey, consumerSecre
     headers : {}
   });
 
+  // Attach Bookmarks and Folders classes.
+  this.bookmarks = new Bookmarks(this);
+//  this.folders   = new Folders(this);
+
   // Set log level
   logger.level = this.opts.logLevel;
   logger.debug('initialized');
@@ -59,32 +64,32 @@ Instapaper.prototype.authenticate = function(callback) {
     }
 
     // Get oauth access token.
-    client.oa = new OAuth({
+    var oa = client.oa = new OAuth({
       consumerKey     : client.consumerKey,
       consumerSecret  : client.consumerSecret,
       signatureMethod : 'HMAC-SHA1',
       accessUrl       : client.opts.apiUrl + '/oauth/access_token',
     });
-    client.oa.getXAuthAccessToken(client.username, client.password, function(err, oauth_token, oauth_token_secret, results) {
+    oa.getXAuthAccessToken(client.username, client.password, function(err, oauth_token, oauth_token_secret, res) {
       if (err) return reject(err);
       if (! oauth_token || ! oauth_token_secret) {
-        err          = new Error('Failed to get OAuth access token');
-        err.response = results;
+        err     = new Error('Failed to get OAuth access token');
+        err.res = res;
         return reject(err);
       }
+      client.POST   = Promise.promisify(oa.post, oa);
       client.access = [ oauth_token, oauth_token_secret ];
       return resolve(client.access);
     });
   }).nodeify(callback);
 };
 
-Instapaper.prototype.request = function(endpoint, opts, callback) {
-  if (opts instanceof Function) {
-    callback = opts;
-    opts     = {};
-  } else if (opts === undefined) {
-    opts = {};
+Instapaper.prototype.request = function(endpoint, body, callback) {
+  if (body instanceof Function) {
+    callback = body;
+    body     = {};
   }
+  var opts = { body : qs.stringify(body || {}) };
   return this .authenticate()
               .bind(this)
               .spread(function(token, secret) {
@@ -93,9 +98,59 @@ Instapaper.prototype.request = function(endpoint, opts, callback) {
                 opts.url                = this.opts.apiUrl + endpoint;
 
                 logger.debug('making API request', opts);
-                return Promise.promisify(this.oa.post, this.oa)(opts);
+                return this.POST(opts);
               })
               .spread(function(response, request) {
                 return JSON.parse(response);
-              }).nodeify(callback);
+              })
+              .catch(function(err) {
+                try {
+                  var data = JSON.parse(err.data)[0];
+                  err = errors[data.error_code];
+                } catch(_err) {
+                  err = errors[0];
+                }
+                throw new err();
+              })
+              .nodeify(callback);
 };
+
+Instapaper.prototype.verifyCredentials = function(callback) {
+  return this.request('/account/verify_credentials').then(function(result) {
+    return Array.isArray(result) ? result[0] : result;
+  }).nodeify(callback);
+};
+
+var Bookmarks = function Bookmarks(client) {
+  this.client = client;
+};
+
+Bookmarks.prototype.list = function(opts, callback) {
+  return this.client.request('/bookmarks/list', opts, callback);
+};
+
+Bookmarks.prototype.delete = function(id, callback) {
+  return this.client.request('/bookmarks/delete', { bookmark_id : id }, callback);
+};
+
+Bookmarks.prototype.star = function(id, callback) {
+  return this.client.request('/bookmarks/star', { bookmark_id : id }, callback);
+};
+
+Bookmarks.prototype.unstar = function(id, callback) {
+  return this.client.request('/bookmarks/unstar', { bookmark_id : id }, callback);
+};
+
+Bookmarks.prototype.archive = function(id, callback) {
+  return this.client.request('/bookmarks/archive', { bookmark_id : id }, callback);
+};
+
+Bookmarks.prototype.unarchive = function(id, callback) {
+  return this.client.request('/bookmarks/unarchive', { bookmark_id : id }, callback);
+};
+
+Bookmarks.prototype.move = function(id, folder, callback) {
+  return this.client.request('/bookmarks/unarchive', { bookmark_id : id, folder_id : folder }, callback);
+};
+
+var errors = module.exports.Errors = require('./errors');
