@@ -101,6 +101,7 @@ _Please refer to the [API documentation](https://www.instapaper.com/api/full) fo
 
 ```
 client.bookmarks.list(PARAMS)           : Promise
+client.bookmarks.getText(BOOKMARK_ID)   : Promise
 client.bookmarks.delete(BOOKMARK_ID)    : Promise
 client.bookmarks.star(BOOKMARK_ID)      : Promise
 client.bookmarks.unstar(BOOKMARK_ID)    : Promise
