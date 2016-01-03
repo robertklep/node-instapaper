@@ -106,6 +106,7 @@ client.bookmarks.star(BOOKMARK_ID)      : Promise
 client.bookmarks.unstar(BOOKMARK_ID)    : Promise
 client.bookmarks.archive(BOOKMARK_ID)   : Promise
 client.bookmarks.unarchive(BOOKMARK_ID) : Promise
+client.bookmarks.get_text(BOOKMARK_ID)  : Promise
 ```
 
 ### Folder management
