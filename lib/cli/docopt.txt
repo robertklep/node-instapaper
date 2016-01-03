@@ -3,6 +3,7 @@ instapaper – an Instapaper API client
 Usage:
   instapaper [options] verify
   instapaper [options] list [--limit=<limit>] [--folder_id=<id>] [--have=<ids>] [--highlights=<highlights>]
+  instapaper [options] get <bookmark_id>
   instapaper [options] star <bookmark_id>
   instapaper [options] unstar <bookmark_id>
   instapaper [options] archive <bookmark_id>
