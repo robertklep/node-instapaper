@@ -9,7 +9,7 @@
   "dependencies": {
     "bluebird": "^2.9.25",
     "custom-error": "^0.2.1",
-    "lodash": "^3.9.3",
+    "lodash": "^4.17.21",
     "mashape-oauth": "^0.1.71",
     "request": "^2.55.0",
     "winston": "^1.0.0"
